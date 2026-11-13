@@ -104,7 +104,7 @@ if(projectImage.complete&&projectImage.naturalWidth)projectImageReady();
 const metal=new THREE.MeshStandardMaterial({color:0xc9ccd2,metalness:.85,roughness:.27});
 
 // Anchor → simulated strap → card pivot → flip group.
-const anchor=new THREE.Group();scene.add(anchor);anchor.position.y=2.9+.22;
+const anchor=new THREE.Group();scene.add(anchor);anchor.position.y=2.9;
 const swing=new THREE.Group();anchor.add(swing);
 const N=SEGMENTS,LEN=STRAP,REST=LEN/N,points=[],previous=[],inverseMass=[];
 for(let i=0;i<=N;i++){const p={x:0,y:-REST*i};points.push(p);previous.push({...p});inverseMass.push(i===0?0:i===N?.32:1)}
@@ -129,10 +129,10 @@ const clipBody=new THREE.Mesh(new THREE.BoxGeometry(.1,.2,.04),metal);clipBody.p
 const flip=new THREE.Group();flip.position.y=-.3-H/2;pivot.add(flip);flip.add(card,front,back);
 const slot=new THREE.Mesh(new THREE.CircleGeometry(.05,16),new THREE.MeshBasicMaterial({color:0xcfcfd6}));slot.position.set(0,H/2-.14,DEPTH/2+.004);flip.add(slot);
 
-let swingAngle=0,swingVelocity=0,tilt=0,tiltVelocity=0,flipAngle=0,flipTarget=0,flipVelocity=0,dropOffset=.22,dropVelocity=0,dropComplete=false;
+let swingAngle=0,swingVelocity=0,tilt=0,tiltVelocity=0,flipAngle=0,flipTarget=0,flipVelocity=0,dropOffset=0,dropVelocity=0,dropComplete=true;
 const physicsSubsteps=embedMode?1:3,solverIterations=embedMode?5:10;
-let sleeping=false,stillFor=0,animationFrame=0;
-function wake(){sleeping=false;stillFor=0;if(embedMode&&!reducedMotion&&!animationFrame)animationFrame=requestAnimationFrame(animate)}
+let sleeping=true,stillFor=0,animationFrame=0;
+function wake(){sleeping=false;stillFor=0;if(!reducedMotion&&!animationFrame)animationFrame=requestAnimationFrame(animate)}
 function step(dt){
   // The badge drops into frame once, then the strap and card settle naturally.
   if(!dropComplete){dropVelocity-=18*dt;dropOffset+=dropVelocity*dt;if(dropOffset<=0){dropOffset=0;dropVelocity=0;dropComplete=true}anchor.position.y=2.9+dropOffset}
@@ -157,7 +157,7 @@ function step(dt){
 }
 
 function resize(){const w=window.innerWidth,h=window.innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.position.z=embedMode?(h<w?8.6:8):(h<w?9:10.5);camera.updateProjectionMatrix()}
-window.addEventListener("resize",resize);resize();
+window.addEventListener("resize",()=>{resize();renderer.render(scene,camera)});resize();
 const raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2();let dragging=false,down=null;
 function setMouse(e){const r=canvas.getBoundingClientRect();mouse.set((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height*2-1))}
 function hitCard(){raycaster.setFromCamera(mouse,camera);return raycaster.intersectObjects([card,front,back],false).length>0}
@@ -171,8 +171,8 @@ canvas.addEventListener("pointerup",e=>{if(dragging&&down){const moved=Math.hypo
 document.getElementById("flip").addEventListener("click",()=>{flipTarget+=Math.PI;wake();previous[N].x-=.015});
 
 const reducedMotion=matchMedia("(prefers-reduced-motion: reduce)").matches;let lastFrame=performance.now();
-function animate(now){animationFrame=0;const dt=Math.min((now-lastFrame)/1000,.033);lastFrame=now;if(!reducedMotion&&!sleeping)step(dt);const active=!embedMode||!sleeping||dragging;if(active)renderer.render(scene,camera);if(active)animationFrame=requestAnimationFrame(animate)}
-animationFrame=requestAnimationFrame(animate);
+function animate(now){animationFrame=0;const dt=Math.min((now-lastFrame)/1000,.033);lastFrame=now;if(!reducedMotion&&!sleeping)step(dt);renderer.render(scene,camera);if(!sleeping||dragging)animationFrame=requestAnimationFrame(animate)}
+animate(performance.now());
 </script>
 </body>
 </html>
