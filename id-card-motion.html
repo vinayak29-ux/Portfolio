@@ -131,7 +131,7 @@ const slot=new THREE.Mesh(new THREE.CircleGeometry(.05,16),new THREE.MeshBasicMa
 
 let swingAngle=0,swingVelocity=0,tilt=0,tiltVelocity=0,flipAngle=0,flipTarget=0,flipVelocity=0,dropOffset=0,dropVelocity=0,dropComplete=true;
 const physicsSubsteps=embedMode?1:3,solverIterations=embedMode?5:10;
-let sleeping=true,stillFor=0,animationFrame=0;
+let sleeping=true,stillFor=0,animationFrame=0,cursorSwing=0,cursorTilt=0;
 function wake(){sleeping=false;stillFor=0;if(!reducedMotion&&!animationFrame)animationFrame=requestAnimationFrame(animate)}
 function step(dt){
   // The badge drops into frame once, then the strap and card settle naturally.
@@ -146,8 +146,8 @@ function step(dt){
     }
   }
   const ropeAngle=Math.atan2(points[N].x-points[N-2].x,-(points[N].y-points[N-2].y));
-  swingVelocity+=(-90*(swingAngle-ropeAngle)-16*swingVelocity)*dt;swingAngle+=swingVelocity*dt;
-  tiltVelocity+=(-18*tilt-6*tiltVelocity)*dt;tilt+=tiltVelocity*dt;
+  swingVelocity+=(-90*(swingAngle-ropeAngle-cursorSwing)-16*swingVelocity)*dt;swingAngle+=swingVelocity*dt;
+  tiltVelocity+=(-18*(tilt-cursorTilt)-6*tiltVelocity)*dt;tilt+=tiltVelocity*dt;
   flipVelocity+=(-90*(flipAngle-flipTarget)-14*flipVelocity)*dt;flipAngle+=flipVelocity*dt;
   pivot.position.set(points[N].x,points[N].y,0);pivot.rotation.z=swingAngle;pivot.rotation.x=tilt;flip.rotation.y=flipAngle;updateRibbon();
   let energy=Math.abs(swingVelocity)+Math.abs(tiltVelocity)+Math.abs(flipVelocity);
@@ -165,8 +165,11 @@ function dragCard(e){const r=canvas.getBoundingClientRect(),nx=(e.clientX-r.left
 canvas.addEventListener("pointerdown",e=>{setMouse(e);if(hitCard()){wake();dragging=true;down={x:e.clientX,y:e.clientY,t:performance.now()};canvas.setPointerCapture(e.pointerId);canvas.style.cursor="grabbing"}});
 canvas.addEventListener("pointermove",e=>{
   setMouse(e);const hit=hitCard();if(!dragging)canvas.style.cursor=hit?"grab":"default";
-  if(dragging){wake();dragCard(e)}
+  if(dragging){cursorSwing=cursorTilt=0;wake();dragCard(e)}
+  else if(hit){const r=canvas.getBoundingClientRect();cursorSwing=Math.max(-.12,Math.min(.12,(e.clientX-r.left-r.width/2)/r.width*.32));cursorTilt=Math.max(-.07,Math.min(.07,(e.clientY-r.top-r.height/2)/r.height*.2));wake()}
+  else if(cursorSwing||cursorTilt){cursorSwing=cursorTilt=0;wake()}
 });
+canvas.addEventListener("pointerleave",()=>{if(!dragging&&(cursorSwing||cursorTilt)){cursorSwing=cursorTilt=0;wake()}canvas.style.cursor="default"});
 canvas.addEventListener("pointerup",e=>{if(dragging&&down){const moved=Math.hypot(e.clientX-down.x,e.clientY-down.y);if(moved<12&&performance.now()-down.t<600){flipTarget+=Math.PI;wake()}}dragging=false;down=null;canvas.style.cursor="grab"});
 document.getElementById("flip").addEventListener("click",()=>{flipTarget+=Math.PI;wake();previous[N].x-=.015});
 
