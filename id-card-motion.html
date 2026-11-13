@@ -35,7 +35,7 @@ projectImage.src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxI
 let frontTextureCanvas=null,frontTexture=null;
 const canvas=document.getElementById("badge");
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:"high-performance"});
-renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,embedMode?1:1.5));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
 renderer.outputEncoding=THREE.sRGBEncoding;
 
 const scene=new THREE.Scene();
@@ -104,7 +104,7 @@ if(projectImage.complete&&projectImage.naturalWidth)projectImageReady();
 const metal=new THREE.MeshStandardMaterial({color:0xc9ccd2,metalness:.85,roughness:.27});
 
 // Anchor → simulated strap → card pivot → flip group.
-const anchor=new THREE.Group();scene.add(anchor);anchor.position.y=2.9+.35;
+const anchor=new THREE.Group();scene.add(anchor);anchor.position.y=2.9+1.25;
 const swing=new THREE.Group();anchor.add(swing);
 const N=SEGMENTS,LEN=STRAP,REST=LEN/N,points=[],previous=[],inverseMass=[];
 for(let i=0;i<=N;i++){const p={x:Math.sin(.18)*REST*i,y:-Math.cos(.18)*REST*i};points.push(p);previous.push({...p});inverseMass.push(i===0?0:i===N?.32:1)}
@@ -129,17 +129,17 @@ const clipBody=new THREE.Mesh(new THREE.BoxGeometry(.1,.2,.04),metal);clipBody.p
 const flip=new THREE.Group();flip.position.y=-.3-H/2;pivot.add(flip);flip.add(card,front,back);
 const slot=new THREE.Mesh(new THREE.CircleGeometry(.05,16),new THREE.MeshBasicMaterial({color:0xcfcfd6}));slot.position.set(0,H/2-.14,DEPTH/2+.004);flip.add(slot);
 
-let swingAngle=.045,swingVelocity=0,tilt=0,tiltVelocity=0,flipAngle=0,flipTarget=0,flipVelocity=0,dropOffset=.35,dropVelocity=0,dropComplete=false;
+let swingAngle=.2,swingVelocity=0,tilt=0,tiltVelocity=0,flipAngle=0,flipTarget=0,flipVelocity=0,dropOffset=1.25,dropVelocity=0,dropComplete=false;
 const physicsSubsteps=embedMode?1:3,solverIterations=embedMode?5:10;
 let sleeping=false,stillFor=0,animationFrame=0;
 function wake(){sleeping=false;stillFor=0;if(embedMode&&!reducedMotion&&!animationFrame)animationFrame=requestAnimationFrame(animate)}
 function step(dt){
   // The badge drops into frame once, then the strap and card settle naturally.
-  if(!dropComplete){dropVelocity-=18*dt;dropOffset+=dropVelocity*dt;if(dropOffset<=0){dropOffset=0;dropVelocity=0;dropComplete=true;swingVelocity+=.14;tiltVelocity+=.025;previous[N].x-=.05}anchor.position.y=2.9+dropOffset}
+  if(!dropComplete){dropVelocity-=18*dt;dropOffset+=dropVelocity*dt;if(dropOffset<=0){dropOffset=0;dropVelocity=0;dropComplete=true;swingVelocity+=.8;tiltVelocity+=.14;previous[N].x-=.05}anchor.position.y=2.9+dropOffset}
   // Verlet strap with gravity, damping, and a lighter solver in the embedded preview.
   for(let sub=0;sub<physicsSubsteps;sub++){
     const h=dt/physicsSubsteps,g=-26*h*h;
-    for(let i=1;i<=N;i++){const p=points[i],q=previous[i],vx=(p.x-q.x)*.88,vy=(p.y-q.y)*.88;q.x=p.x;q.y=p.y;p.x+=vx;p.y+=vy+g}
+    for(let i=1;i<=N;i++){const p=points[i],q=previous[i],vx=(p.x-q.x)*.94,vy=(p.y-q.y)*.94;q.x=p.x;q.y=p.y;p.x+=vx;p.y+=vy+g}
     for(let k=0;k<solverIterations;k++){
       points[0].x=0;points[0].y=0;
       for(let i=0;i<N;i++){const a=points[i],b=points[i+1],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1e-6,diff=(d-REST)/d,wa=inverseMass[i],wb=inverseMass[i+1],sum=wa+wb;a.x+=dx*diff*wa/sum;a.y+=dy*diff*wa/sum;b.x-=dx*diff*wb/sum;b.y-=dy*diff*wb/sum}
@@ -152,7 +152,7 @@ function step(dt){
   pivot.position.set(points[N].x,points[N].y,0);pivot.rotation.z=swingAngle;pivot.rotation.x=tilt;flip.rotation.y=flipAngle;updateRibbon();
   let energy=Math.abs(swingVelocity)+Math.abs(tiltVelocity)+Math.abs(flipVelocity);
   for(let i=1;i<=N;i++)energy+=Math.hypot(points[i].x-previous[i].x,points[i].y-previous[i].y);
-  if(energy<.005)stillFor+=dt;else stillFor=0;
+  if(energy<.002)stillFor+=dt;else stillFor=0;
   if(stillFor>.8){for(let i=1;i<=N;i++){previous[i].x=points[i].x;previous[i].y=points[i].y}swingVelocity=tiltVelocity=flipVelocity=0;sleeping=true}
 }
 
