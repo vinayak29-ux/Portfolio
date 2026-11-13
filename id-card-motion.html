@@ -57,36 +57,41 @@ function roundedShape(w,h,r){
 const cardShape=roundedShape(W,H,RADIUS);
 
 function drawFront(ctx){
-  ctx.fillStyle="#f5f5f8";ctx.fillRect(0,0,768,1024);
-  ctx.fillStyle="#9292a0";ctx.font="500 20px "+font;ctx.fillText(PROFILE.role.toUpperCase(),48,62);
-  ctx.save();ctx.beginPath();ctx.roundRect(40,84,688,640,40);ctx.clip();
-  ctx.fillStyle="#101722";ctx.fillRect(40,84,688,640);
-  if(projectImage.complete&&projectImage.naturalWidth){
-    ctx.drawImage(projectImage,64,84,640,640);
-  }
-  ctx.restore();
-  ctx.fillStyle="#14141a";ctx.font="700 78px "+font;ctx.fillText(PROFILE.name,48,808);
-  ctx.fillStyle="#8a8a98";ctx.font="400 26px "+font;ctx.fillText(PROFILE.role,48,856);
-  ctx.font="500 18px "+font;ctx.fillText(PROFILE.status.toUpperCase(),48,960);
-  ctx.fillStyle="#14141a";ctx.beginPath();ctx.arc(686,945,26,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle="#fff";ctx.fillRect(678,937,16,16);
+  ctx.fillStyle="#101118";ctx.fillRect(0,0,768,1024);
+  const accent=ctx.createLinearGradient(48,0,720,0);accent.addColorStop(0,"#a99cff");accent.addColorStop(.55,"#8279d8");accent.addColorStop(1,"#484667");
+  ctx.fillStyle=accent;ctx.fillRect(0,0,768,8);
+  ctx.fillStyle="#f0eff8";ctx.font="700 21px "+font;ctx.fillText("VINAYAK KESARWANI",48,58);
+  ctx.fillStyle="#8c8b9c";ctx.font="500 15px "+font;ctx.textAlign="right";ctx.fillText("PORTFOLIO  /  2026",720,58);ctx.textAlign="left";
+  ctx.save();ctx.beginPath();ctx.roundRect(40,92,688,530,28);ctx.clip();ctx.fillStyle="#191a23";ctx.fillRect(40,92,688,530);
+  if(projectImage.complete&&projectImage.naturalWidth){const iw=projectImage.naturalWidth,ih=projectImage.naturalHeight,scale=Math.max(688/iw,530/ih),dw=iw*scale,dh=ih*scale;ctx.drawImage(projectImage,40+(688-dw)/2,92+(530-dh)/2,dw,dh)}
+  const shade=ctx.createLinearGradient(0,430,0,622);shade.addColorStop(0,"#10111800");shade.addColorStop(1,"#101118dd");ctx.fillStyle=shade;ctx.fillRect(40,430,688,192);ctx.restore();
+  ctx.fillStyle="#b9b1ff";ctx.font="600 15px "+font;ctx.fillText("SELECTED WORK  ·  04 PROJECTS",48,668);
+  ctx.fillStyle="#f7f6fb";ctx.font="700 84px "+font;ctx.fillText("PROJECTS",46,759);
+  ctx.fillStyle="#b7b5c2";ctx.font="400 24px "+font;ctx.fillText("College Copilot · AI student tools",48,802);
+  ctx.fillStyle="#1b1b26";ctx.strokeStyle="#ffffff20";ctx.lineWidth=1;
+  ctx.beginPath();ctx.roundRect(48,835,178,42,20);ctx.fill();ctx.stroke();ctx.fillStyle="#ded9ff";ctx.font="600 15px "+font;ctx.fillText("AI / ML",70,862);
+  ctx.fillStyle="#1b1b26";ctx.beginPath();ctx.roundRect(238,835,214,42,20);ctx.fill();ctx.stroke();ctx.fillStyle="#d5d3df";ctx.fillText("STUDENT TOOLS",260,862);
+  ctx.fillStyle="#ffffff22";ctx.fillRect(48,910,672,1);
+  ctx.fillStyle="#a5a3b2";ctx.font="500 17px "+font;ctx.fillText("B.TECH CSE  ·  AI / ML",48,952);
+  ctx.textAlign="right";ctx.fillStyle="#8f8d9c";ctx.font="500 15px "+font;ctx.fillText("GHAZIABAD, INDIA",720,952);ctx.textAlign="left";
 }
 function drawBack(ctx){
-  ctx.fillStyle="#f1f1f5";ctx.fillRect(0,0,768,1024);
-  ctx.fillStyle="#9292a0";ctx.font="500 20px "+font;ctx.fillText("CONTACT",48,62);
-  ctx.fillStyle="#14141a";ctx.font="700 76px "+font;ctx.fillText(PROFILE.name,48,170);
-  ctx.fillStyle="#858591";ctx.font="400 25px "+font;ctx.fillText(PROFILE.role,48,214);
-  [["Email",PROFILE.email],["Social",PROFILE.handle],["Status",PROFILE.status]].forEach((row,i)=>{
-    const y=270+i*108;ctx.fillStyle="#e8e8ed";ctx.beginPath();ctx.roundRect(40,y,688,88,24);ctx.fill();
-    ctx.fillStyle="#92929d";ctx.font="400 21px "+font;ctx.fillText(row[0],68,y+54);
-    ctx.fillStyle="#17171d";ctx.font="600 25px "+font;ctx.fillText(row[1].slice(0,27),230,y+54);
+  ctx.fillStyle="#101118";ctx.fillRect(0,0,768,1024);ctx.fillStyle="#a99cff";ctx.fillRect(0,0,768,8);
+  ctx.fillStyle="#b9b1ff";ctx.font="600 18px "+font;ctx.fillText("CONTACT  /  VINAYAK KESARWANI",48,68);
+  ctx.fillStyle="#f7f6fb";ctx.font="700 60px "+font;ctx.fillText(PROFILE.name,48,170);
+  ctx.fillStyle="#b7b5c2";ctx.font="400 24px "+font;ctx.fillText(PROFILE.role,48,216);
+  [["EMAIL",PROFILE.email],["GITHUB",PROFILE.handle],["STATUS",PROFILE.status]].forEach((row,i)=>{
+    const y=292+i*128;ctx.fillStyle="#191a23";ctx.beginPath();ctx.roundRect(40,y,688,98,20);ctx.fill();ctx.fillStyle="#a99cff";ctx.fillRect(58,y+24,3,50);
+    ctx.fillStyle="#8f8d9c";ctx.font="600 15px "+font;ctx.fillText(row[0],82,y+39);
+    ctx.fillStyle="#f0eff8";ctx.font="500 22px "+font;ctx.fillText(row[1].slice(0,34),82,y+72);
   });
-  ctx.fillStyle="#17171d";ctx.font="600 25px "+font;ctx.fillText("Thanks for stopping by.",48,790);
+  ctx.fillStyle="#ffffff22";ctx.fillRect(48,720,672,1);ctx.fillStyle="#a5a3b2";ctx.font="400 24px "+font;ctx.fillText("Thanks for stopping by.",48,775);
+  ctx.fillStyle="#8f8d9c";ctx.font="500 15px "+font;ctx.fillText("OPEN TO COLLABORATE  ·  2026",48,950);
 }
 function makeTexture(draw){
   const texCanvas=document.createElement("canvas");texCanvas.width=768;texCanvas.height=1024;
   draw(texCanvas.getContext("2d"));const t=new THREE.CanvasTexture(texCanvas);
-  t.encoding=THREE.sRGBEncoding;t.anisotropy=8;
+  t.encoding=THREE.sRGBEncoding;t.anisotropy=embedMode?1:4;
   if(draw===drawFront){frontTextureCanvas=texCanvas;frontTexture=t}
   return t;
 }
@@ -104,7 +109,7 @@ if(projectImage.complete&&projectImage.naturalWidth)projectImageReady();
 const metal=new THREE.MeshStandardMaterial({color:0xc9ccd2,metalness:.85,roughness:.27});
 
 // Anchor â†’ simulated strap â†’ card pivot â†’ flip group.
-const anchor=new THREE.Group();scene.add(anchor);anchor.position.y=2.9+1.25;
+const anchor=new THREE.Group();scene.add(anchor);anchor.position.y=2.9+.65;
 const swing=new THREE.Group();anchor.add(swing);
 const N=SEGMENTS,LEN=STRAP,REST=LEN/N,points=[],previous=[],inverseMass=[];
 for(let i=0;i<=N;i++){const p={x:Math.sin(.18)*REST*i,y:-Math.cos(.18)*REST*i};points.push(p);previous.push({...p});inverseMass.push(i===0?0:i===N?.32:1)}
@@ -129,17 +134,17 @@ const clipBody=new THREE.Mesh(new THREE.BoxGeometry(.1,.2,.04),metal);clipBody.p
 const flip=new THREE.Group();flip.position.y=-.3-H/2;pivot.add(flip);flip.add(card,front,back);
 const slot=new THREE.Mesh(new THREE.CircleGeometry(.05,16),new THREE.MeshBasicMaterial({color:0xcfcfd6}));slot.position.set(0,H/2-.14,DEPTH/2+.004);flip.add(slot);
 
-let swingAngle=.2,swingVelocity=0,tilt=0,tiltVelocity=0,flipAngle=0,flipTarget=0,flipVelocity=0,dropOffset=1.25,dropVelocity=0,dropComplete=false;
+let swingAngle=.08,swingVelocity=0,tilt=0,tiltVelocity=0,flipAngle=0,flipTarget=0,flipVelocity=0,dropOffset=.65,dropVelocity=0,dropComplete=false;
 const physicsSubsteps=embedMode?1:3,solverIterations=embedMode?5:10;
 let sleeping=false,stillFor=0,animationFrame=0;
 function wake(){sleeping=false;stillFor=0;if(embedMode&&!reducedMotion&&!animationFrame)animationFrame=requestAnimationFrame(animate)}
 function step(dt){
   // The badge drops into frame once, then the strap and card settle naturally.
-  if(!dropComplete){dropVelocity-=18*dt;dropOffset+=dropVelocity*dt;if(dropOffset<=0){dropOffset=0;dropVelocity=0;dropComplete=true;swingVelocity+=.8;tiltVelocity+=.14;previous[N].x-=.05}anchor.position.y=2.9+dropOffset}
+  if(!dropComplete){dropVelocity-=18*dt;dropOffset+=dropVelocity*dt;if(dropOffset<=0){dropOffset=0;dropVelocity=0;dropComplete=true;swingVelocity+=.24;tiltVelocity+=.045;previous[N].x-=.05}anchor.position.y=2.9+dropOffset}
   // Verlet strap with gravity, damping, and a lighter solver in the embedded preview.
   for(let sub=0;sub<physicsSubsteps;sub++){
     const h=dt/physicsSubsteps,g=-26*h*h;
-    for(let i=1;i<=N;i++){const p=points[i],q=previous[i],vx=(p.x-q.x)*.94,vy=(p.y-q.y)*.94;q.x=p.x;q.y=p.y;p.x+=vx;p.y+=vy+g}
+    for(let i=1;i<=N;i++){const p=points[i],q=previous[i],vx=(p.x-q.x)*.9,vy=(p.y-q.y)*.9;q.x=p.x;q.y=p.y;p.x+=vx;p.y+=vy+g}
     for(let k=0;k<solverIterations;k++){
       points[0].x=0;points[0].y=0;
       for(let i=0;i<N;i++){const a=points[i],b=points[i+1],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1e-6,diff=(d-REST)/d,wa=inverseMass[i],wb=inverseMass[i+1],sum=wa+wb;a.x+=dx*diff*wa/sum;a.y+=dy*diff*wa/sum;b.x-=dx*diff*wb/sum;b.y-=dy*diff*wb/sum}
