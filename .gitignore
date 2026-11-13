@@ -1,0 +1,5 @@
+# Keep source recordings and personal source photos out of the public repository.
+*.mp4
+portrait-source.*
+desk-laptop.png
+New Text Document.txt
