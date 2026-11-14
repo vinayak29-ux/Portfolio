@@ -129,13 +129,13 @@ const clipBody=new THREE.Mesh(new THREE.BoxGeometry(.1,.2,.04),metal);clipBody.p
 const flip=new THREE.Group();flip.position.y=-.3-H/2;pivot.add(flip);flip.add(card,front,back);
 const slot=new THREE.Mesh(new THREE.CircleGeometry(.05,16),new THREE.MeshBasicMaterial({color:0xcfcfd6}));slot.position.set(0,H/2-.14,DEPTH/2+.004);flip.add(slot);
 
-let swingAngle=0,swingVelocity=0,tilt=0,tiltVelocity=0,flipAngle=0,flipTarget=0,flipVelocity=0,dropOffset=.55,dropVelocity=0,dropComplete=false;
+let swingAngle=0,swingVelocity=0,tilt=0,tiltVelocity=0,flipAngle=0,flipTarget=0,flipVelocity=0,dropOffset=.3,dropElapsed=0,dropDuration=.82,dropComplete=false;
 const physicsSubsteps=embedMode?1:3,solverIterations=embedMode?5:10;
 let sleeping=false,stillFor=0,animationFrame=0,cursorSwing=0;
 function wake(){sleeping=false;stillFor=0;if(!reducedMotion&&!animationFrame)animationFrame=requestAnimationFrame(animate)}
 function step(dt){
-  // The badge drops into frame once, then the strap and card settle naturally.
-  if(!dropComplete){dropVelocity-=18*dt;dropOffset+=dropVelocity*dt;if(dropOffset<=0){dropOffset=0;dropVelocity=0;dropComplete=true;swingVelocity+=.42}anchor.position.y=2.9+dropOffset}
+  // A short, eased entrance lets the badge settle without a hard bounce.
+  if(!dropComplete){dropElapsed=Math.min(dropDuration,dropElapsed+dt);const t=dropElapsed/dropDuration,eased=1-Math.pow(1-t,3);dropOffset=.3*(1-eased);anchor.position.y=2.9+dropOffset;if(t>=1){dropOffset=0;dropComplete=true}}
   // Verlet strap with gravity, damping, and a lighter solver in the embedded preview.
   for(let sub=0;sub<physicsSubsteps;sub++){
     const h=dt/physicsSubsteps,g=-26*h*h;
